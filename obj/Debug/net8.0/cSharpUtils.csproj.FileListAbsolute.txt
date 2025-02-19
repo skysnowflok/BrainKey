@@ -1,0 +1,15 @@
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\obj\Debug\net8.0\cSharpUtils.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\obj\Debug\net8.0\cSharpUtils.AssemblyInfoInputs.cache
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\obj\Debug\net8.0\cSharpUtils.AssemblyInfo.cs
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\obj\Debug\net8.0\cSharpUtils.csproj.CoreCompileInputs.cache
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\obj\Debug\net8.0\cSharpUtils.sourcelink.json
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\bin\Debug\net8.0\cSharpUtils.exe
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\bin\Debug\net8.0\cSharpUtils.deps.json
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\bin\Debug\net8.0\cSharpUtils.runtimeconfig.json
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\bin\Debug\net8.0\cSharpUtils.dll
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\bin\Debug\net8.0\cSharpUtils.pdb
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\obj\Debug\net8.0\cSharpUtils.dll
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\obj\Debug\net8.0\refint\cSharpUtils.dll
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\obj\Debug\net8.0\cSharpUtils.pdb
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\obj\Debug\net8.0\cSharpUtils.genruntimeconfig.cache
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\obj\Debug\net8.0\ref\cSharpUtils.dll

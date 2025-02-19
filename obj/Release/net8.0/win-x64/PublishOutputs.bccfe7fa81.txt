@@ -1,0 +1,2 @@
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\bin\Release\net8.0\win-x64\publish\cSharpUtils.pdb
+C:\Users\edu\Documents\GitHub\csharp\cSharpUtils\bin\Release\net8.0\win-x64\publish\cSharpUtils.exe
