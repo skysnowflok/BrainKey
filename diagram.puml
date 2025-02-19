@@ -1,0 +1,58 @@
+@startuml
+' Define classes
+class cSharpUtils {
+    - static byte[] encrypted
+    - static string decrypted
+    - static byte[] masterKey
+    - static bool programTerminateFlag
+    - static string inputIdentificador
+    - static string inputSenha
+    - static List<passwordTemplate> listOfPasswords
+    - static List<byte[]> listofEncryptedPasswords
+    + static void Main()
+    + static byte[] EncryptToJson(ICryptoTransform encrypter, List<passwordTemplate> input)
+    + static byte[] Encrypt(ICryptoTransform encrypter, string input, string fileName, string fileExtension, int i)
+    + static passwordTemplate DecryptFromJson(ICryptoTransform decrypter, string filePath)
+    + static string Decrypt(ICryptoTransform decrypter, string filePath)
+    + static void GetPasswords(ICryptoTransform decrypter)
+}
+
+class passwordTemplate {
+    + string Identificador
+    + string Senha
+}
+
+class masterKeyManager {
+    + static (byte[] key, byte[] IV) GetMasterKey()
+    + static void FirstBootUp()
+}
+
+' Define relationships
+cSharpUtils --> passwordTemplate : uses
+cSharpUtils --> masterKeyManager : uses
+cSharpUtils --> Aes : uses
+cSharpUtils --> ICryptoTransform : uses
+cSharpUtils --> JsonSerializer : uses
+cSharpUtils --> File : uses
+cSharpUtils --> MemoryStream : uses
+cSharpUtils --> CryptoStream : uses
+cSharpUtils --> StreamWriter : uses
+cSharpUtils --> StreamReader : uses
+
+' Notes for additional context
+note right of cSharpUtils::Main
+    This is the entry point of the program.
+    It handles user input and manages encryption/decryption.
+end note
+
+note right of cSharpUtils::EncryptToJson
+    Serializes the passwordTemplate object to JSON
+    and encrypts it using the provided ICryptoTransform.
+end note
+
+note right of cSharpUtils::DecryptFromJson
+    Decrypts the JSON file and deserializes it
+    into a passwordTemplate object.
+end note
+
+@enduml
