@@ -172,11 +172,10 @@ class cSharpUtils
             passwordTemplate DecPassword = new passwordTemplate();
             DecPassword = DecryptFromJson(decrypter, $"senhas{i}.json");
             // Isso é uma merda, depois arruma isso.
-            System.Console.WriteLine(DecPassword.Identificador);
-            System.Console.WriteLine(DecPassword.Senha);
 
             System.Console.WriteLine("Indentificador: " + DecPassword.Identificador);
             System.Console.WriteLine("Senha: " + DecPassword.Senha);
+            System.Console.WriteLine("-----------------------------")
         }
         
     }
