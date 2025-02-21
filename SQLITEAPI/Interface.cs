@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq.Expressions;
 using System.Text;
 using Microsoft.Data.Sqlite;
 
@@ -50,42 +51,48 @@ namespace SQLITEAPI
         {
             switch(args[0])
             {
-            case commandsDefinitions.databaseCommands.Create:
-            File.OpenWrite($"{args[1]}.db");
-            break;
-            case commandsDefinitions.databaseCommands.Delete:
-            CheckIfDatabaseExists($"{args[1]}.db");
-            File.Delete($"{args[1]}.db");
-            break;
-            case commandsDefinitions.databaseCommands.Select:
-            File.WriteAllText("selectedDatabase.txt", args[1]);
-            connectionString = $"Datasource={File.ReadAllText("selectedDatabase.txt")}.db;Mode=ReadWriteCreate;Cache=Shared";
-
-            break;
-            default:
-            ShowHelp(DatabaseCommandHelp);
-            break;
-            
+                case commandsDefinitions.databaseCommands.Create:
+                    using (FileStream fs = File.Create($@"SQLITEAPI\{args[1]}.db"))
+                    {
+                        // Ensure the file is created and closed properly
+                    }
+                    break;
+                case commandsDefinitions.databaseCommands.Delete:
+                    CheckIfDatabaseExists($@"SQLITEAPI\{args[1]}.db");
+                    File.Delete($@"SQLITEAPI\{args[1]}.db");
+                    break;
+                case commandsDefinitions.databaseCommands.Select:
+                    File.WriteAllText(@"SQLITEAPI\selectedDatabase.txt", args[1]);
+                    selectedDatabase = $@"SQLITEAPI\{args[1]}.db";
+                    connectionString = $@"Data Source={selectedDatabase};";
+                    System.Console.WriteLine($"Connection string set to: {connectionString}");
+                    break;
+                default:
+                    ShowHelp(DatabaseCommandHelp);
+                    break;
             }
         }
 
-
-
-
-
         public static void TableCommand(params string[] args)
         {
+            if (connectionString == null)
+            {
+                throw new Exception("Connection string is null. Please select a database first.");
+            }
+
             if (args == null || args.Length == 0)
             {
                 ShowHelp(TableCommandHelp);
                 return;
             }
 
+            System.Console.WriteLine($"Opening connection with connection string: {connectionString}");
             using (SqliteConnection conn = new SqliteConnection(connectionString))
             {
                 try 
                 {
                     conn.Open();
+                    System.Console.WriteLine("Connection opened successfully.");
                     switch (args[0])
                     {
                         case commandsDefinitions.TableCommands.Create:
@@ -117,10 +124,9 @@ namespace SQLITEAPI
                             {
                                 throw new ArgumentException("Adding a value requires table name, column, and value.");
                             }
-                            query = $"INSERT INTO {args[1]} ({args[2]}) VALUES (@Value)";
+                            query = $"INSERT INTO {args[1]} ({args[2]}) VALUES ({args[3]})";
                             using (SqliteCommand comm = new SqliteCommand(query, conn))
                             {
-                                comm.Parameters.AddWithValue("@Value", args[3]);
                                 comm.ExecuteNonQuery();
                             }
                             break;
@@ -164,6 +170,7 @@ namespace SQLITEAPI
                                             System.Console.WriteLine($"{datareader.GetName(i)}: {datareader.GetValue(i)}");
                                         }
                                     }
+                                    System.Console.WriteLine("Pressione qualquer tecla para continuar...");
                                     Console.ReadKey();
                                 }
                             }
@@ -173,14 +180,11 @@ namespace SQLITEAPI
                             ShowHelp(TableCommandHelp);
                             break;
                     }
-
                 }
-                finally
+                catch (Exception e)
                 {
-                    conn.Close();
+                    System.Console.WriteLine("Error: " + e);
                 }
-                
-                
             }
         }    
     }

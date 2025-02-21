@@ -150,19 +150,20 @@ static class cSharpUtils
     public static void WriteToDatabase (ICryptoTransform encrypter, passwordTemplate input)
     {
         passwordTemplate passwordInfo = Encrypt(encrypter, input);
-        SQLITEAPI.Interface.TableCommand("addvalue", "encryptedPasswords", "encIdentifier, encPassword", $"{passwordInfo.Identificador}, {passwordInfo.Senha}");
+        SQLITEAPI.Interface.TableCommand("addvalue", "encryptedPasswords", "encIdentifier, encPassword", $"'{passwordInfo.Identificador}', '{passwordInfo.Senha}'");
 
     }
 
 
     static string DecryptAll(ICryptoTransform decrypter)
     {
-        for (int i = 1; i <= 1; i++)
+        SQLITEAPI.Interface.TableCommand("create", "passwords", "Id INTEGER PRIMARY KEY AUTOINCREMENT, Identifier TEXT NOT NULL, Password TEXT NOT NULL");
+        for (int i = 1; i <= 4; i++)
         {
-            SQLITEAPI.Interface.TableCommand("getvalue", "encryptedPasswords", "encIdentifier", i.ToString());
-            byte[] inputIdentifier = Convert.FromBase64String(SQLITEAPI.Interface.GetValueResult);
-            SQLITEAPI.Interface.TableCommand("getvalue", "encryptedPasswords", "encPassword", i.ToString());
-            byte[] inputPassword = Convert.FromBase64String(SQLITEAPI.Interface.GetValueResult);
+            SQLITEAPI.Interface.TableCommand("getvalue", "encIdentifier", "encryptedPasswords", i.ToString());
+            byte[] inputIdentifier = Convert.FromBase64String(SQLITEAPI.Interface.GetValueResult ?? "");
+            SQLITEAPI.Interface.TableCommand("getvalue", "encPassword", "encryptedPasswords", i.ToString());
+            byte[] inputPassword = Convert.FromBase64String(SQLITEAPI.Interface.GetValueResult ?? "");
 
             using (MemoryStream stream = new MemoryStream(inputIdentifier))
             {
@@ -185,13 +186,9 @@ static class cSharpUtils
                     }
                 }
             }
-
-            SQLITEAPI.Interface.TableCommand("create", "passwords", "Id INTEGER PRIMARY KEY AUTOINCREMENT, Identifier TEXT NOT NULL, Password TEXT NOT NULL");
             SQLITEAPI.Interface.TableCommand("addvalue", "passwords", "Identifier, Password", $"'{decryptedIdentifier}', '{decryptedPassword}'");
         }
         SQLITEAPI.Interface.TableCommand("view", "passwords");
-        System.Console.WriteLine("Press any key to return...");
-        Console.ReadKey();
         SQLITEAPI.Interface.TableCommand("destroy", "passwords");
         
         
