@@ -1,0 +1,386 @@
+@startuml "Password Manager - Detailed Class Diagram"
+allowmixing
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam packageStyle rectangle
+
+package "Password Manager System" {
+  ' Main classes with detailed attributes and methods
+  class cSharpUtils {
+    ' Attributes
+    - static byte[] encrypted
+    - static string decrypted
+    - static byte[] masterKey
+    - static bool programTerminateFlag
+    - static string inputIdentificador
+    - static string inputSenha
+    - static List<passwordTemplate> listOfPasswords
+    - static List<byte[]> listofEncryptedPasswords
+    
+    ' Methods
+    + static void Main()
+    - static byte[] EncryptToJson(ICryptoTransform encrypter, List<passwordTemplate> input)
+    + static byte[] Encrypt(ICryptoTransform encrypter, string input, string fileName, string fileExtension, int i)
+    - static passwordTemplate DecryptFromJson(ICryptoTransform decrypter, string filePath)
+    - static string Decrypt(ICryptoTransform decrypter, string filePath)
+    - static void GetPasswords(ICryptoTransform decrypter)
+  }
+
+  class masterKeyManager {
+    ' Attributes
+    - static char drive
+    - static byte[] key
+    - static byte[] IV
+    - static ICryptoTransform encrypter
+    
+    ' Methods
+    + static void FirstBootUp()
+    - static void WriteMasterKey(byte[] key, byte[] IV)
+    + static (byte[], byte[]) GetMasterKey()
+  }
+
+  class passwordTemplate {
+    + string Identificador {get; set;}
+    + string Senha {get; set;}
+  }
+}
+
+' External classes from .NET Framework
+package ".NET Framework" {
+  class "System.Security.Cryptography.Aes" as Aes {
+    + Key: byte[]
+    + IV: byte[]
+    + BlockSize: int
+    + KeySize: int
+    + Mode: CipherMode
+    + Padding: PaddingMode
+    + CreateEncryptor(): ICryptoTransform
+    + CreateEncryptor(byte[] key, byte[] iv): ICryptoTransform
+    + CreateDecryptor(): ICryptoTransform
+    + CreateDecryptor(byte[] key, byte[] iv): ICryptoTransform
+  }
+
+  interface "System.Security.Cryptography.ICryptoTransform" as ICryptoTransform {
+    + InputBlockSize: int {get;}
+    + OutputBlockSize: int {get;}
+    + CanTransformMultipleBlocks: bool {get;}
+    + CanReuseTransform: bool {get;}
+    + TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset): int
+    + TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount): byte[]
+    + Dispose(): void
+  }
+
+  class "System.IO.FileStream" as FileStream {
+    + CanRead: bool {get;}
+    + CanWrite: bool {get;}
+    + Position: long {get; set;}
+    + Length: long {get;}
+    + Write(byte[] array, int offset, int count): void
+    + Read(byte[] array, int offset, int count): int
+    + Close(): void
+  }
+
+  class "System.IO.MemoryStream" as MemoryStream {
+    + CanRead: bool {get;}
+    + CanWrite: bool {get;}
+    + Position: long {get; set;}
+    + Length: long {get;}
+    + ToArray(): byte[]
+    + WriteTo(Stream stream): void
+  }
+
+  class "System.IO.CryptoStream" as CryptoStream {
+    + CanRead: bool {get;}
+    + CanWrite: bool {get;}
+    + CanSeek: bool {get;}
+    + HasFlushedFinalBlock: bool {get;}
+    + FlushFinalBlock(): void
+  }
+
+  class "System.Text.Json.JsonSerializer" as JsonSerializer {
+    + {static} Serialize<T>(T value): string
+    + {static} Deserialize<T>(string json): T
+  }
+}
+
+' Associations and Dependencies
+cSharpUtils --> passwordTemplate : creates and manages >
+cSharpUtils --> masterKeyManager : uses for key management >
+cSharpUtils ..> Aes : creates and configures >
+cSharpUtils ..> ICryptoTransform : uses for cryptographic operations >
+cSharpUtils ..> MemoryStream : uses for in-memory operations >
+cSharpUtils ..> CryptoStream : uses for cryptographic stream operations >
+cSharpUtils ..> FileStream : uses for file I/O >
+cSharpUtils ..> JsonSerializer : uses for serialization >
+
+masterKeyManager ..> cSharpUtils : calls Encrypt() >
+masterKeyManager ..> FileStream : uses for key file I/O >
+masterKeyManager ..> Aes : configures >
+
+Aes ..> ICryptoTransform : creates >
+CryptoStream --> ICryptoTransform : uses >
+
+' Detailed notes
+note top of cSharpUtils
+  <b>Main Controller Class</b>
+  Handles application flow, user interface,
+  and encryption/decryption operations
+end note
+
+note right of cSharpUtils::Main
+  <b>Program Flow:</b>
+  1. Check for first time setup
+  2. Authenticate using master key
+  3. Display command menu
+  4. Process user commands:
+     - Add new password
+     - View passwords
+     - Exit program
+end note
+
+note bottom of masterKeyManager
+  <b>Key Management:</b>
+  Handles generation, storage, and retrieval of
+  encryption keys. Supports external drive storage
+  for enhanced security.
+end note
+
+note left of passwordTemplate
+  <b>Data Structure:</b>
+  Simple POCO class for
+  password data with JSON
+  serialization support
+end note
+
+@enduml
+
+@startuml "Password Manager - Authentication Sequence"
+allowmixing
+
+actor User
+participant "cSharpUtils" as Main
+participant "masterKeyManager" as KeyMgr
+participant "Aes Class" as Aes
+participant "FileSystem" as FS
+
+User -> Main : Start application
+activate Main
+
+alt First time setup
+    Main -> FS : Check "firstTime0.txt"
+    activate FS
+    FS --> Main : File doesn't exist
+    deactivate FS
+    
+    Main -> KeyMgr : FirstBootUp()
+    activate KeyMgr
+    KeyMgr -> User : Display instructions
+    User -> KeyMgr : Specify drive letter
+    User -> KeyMgr : Confirm key generation
+    
+    KeyMgr -> Aes : Create()
+    activate Aes
+    Aes --> KeyMgr : Return Aes instance
+    deactivate Aes
+    
+    KeyMgr -> FS : Write key.bin
+    activate FS
+    FS --> KeyMgr : Confirm write
+    deactivate FS
+    
+    KeyMgr -> FS : Write IV.bin
+    activate FS
+    FS --> KeyMgr : Confirm write
+    deactivate FS
+    
+    KeyMgr -> Main : Call Encrypt() to create firstTime0.txt
+    Main -> FS : Write firstTime0.txt
+    activate FS
+    FS --> Main : Confirm write
+    deactivate FS
+    
+    KeyMgr --> Main : Setup complete
+    deactivate KeyMgr
+else Normal operation
+    Main -> FS : Check "firstTime0.txt"
+    activate FS
+    FS --> Main : File exists
+    deactivate FS
+    
+    Main -> Aes : Create()
+    activate Aes
+    Aes --> Main : Return Aes instance
+    deactivate Aes
+    
+    Main -> KeyMgr : GetMasterKey()
+    activate KeyMgr
+    
+    alt External drive available
+        KeyMgr -> FS : Read from drive:\key.bin
+        activate FS
+        FS --> KeyMgr : Return key
+        deactivate FS
+        
+        KeyMgr -> FS : Read from drive:\IV.bin
+        activate FS
+        FS --> KeyMgr : Return IV
+        deactivate FS
+    else Fallback to local files
+        KeyMgr -> FS : Read from key.bin
+        activate FS
+        FS --> KeyMgr : Return key
+        deactivate FS
+        
+        KeyMgr -> FS : Read from IV.bin
+        activate FS
+        FS --> KeyMgr : Return IV
+        deactivate FS
+    end
+    
+    KeyMgr --> Main : Return (key, IV)
+    deactivate KeyMgr
+    
+    Main -> Aes : Configure Key and IV
+    activate Aes
+    Main -> Aes : CreateEncryptor()
+    Aes --> Main : Return encryptor
+    Main -> Aes : CreateDecryptor()
+    Aes --> Main : Return decryptor
+    deactivate Aes
+    
+    Main -> User : Display "Acesso permitido"
+    
+    loop Until program termination
+        Main -> User : Display command menu
+        User -> Main : Select command
+        
+        alt Add password
+            User -> Main : Enter identifier
+            User -> Main : Enter password
+            Main -> Main : Create passwordTemplate
+            Main -> Main : EncryptToJson()
+            Main -> FS : Write encrypted password file
+            activate FS
+            FS --> Main : Confirm write
+            deactivate FS
+        else View passwords
+            Main -> Main : GetPasswords()
+            loop For each password file
+                Main -> FS : Read encrypted file
+                activate FS
+                FS --> Main : Return encrypted data
+                deactivate FS
+                
+                Main -> Main : Decrypt()
+                Main -> User : Display decrypted password
+            end
+        else Exit
+            Main -> Main : Set programTerminateFlag = true
+        end
+    end
+end
+
+deactivate Main
+@enduml
+
+@startuml "Password Manager - Data Flow Diagram"
+allowmixing
+
+skinparam roundCorner 15
+skinparam ArrowColor #666666
+skinparam componentStyle rectangle
+
+agent "User" as user
+component "Password Manager" {
+  component "User Interface" as ui
+  component "Encryption Engine" as engine
+  component "Decryption Engine" as dengine
+  component "Key Manager" as keymanager
+}
+database "Encrypted\nPassword Files" as db
+storage "External USB Drive" as usb
+
+user <--> ui : Inputs credentials\nand commands
+ui --> engine : Password data
+engine --> db : Writes encrypted\npassword files
+db --> dengine : Reads encrypted\npassword files
+dengine --> ui : Decrypted\npassword data
+keymanager <--> usb : Stores/retrieves\nmaster keys
+engine <-- keymanager : Provides\nencryption keys
+dengine <-- keymanager : Provides\ndecryption keys
+
+note bottom of db
+  Each password is stored in 
+  a separate encrypted JSON file
+end note
+
+note right of usb
+  USB key serves as a 
+  physical authentication factor
+end note
+
+note bottom of keymanager
+  Supports configurable 
+  drive letters for flexibility
+end note
+@enduml
+
+@startuml "Password Manager - Component Diagram"
+allowmixing
+
+package "Password Manager Application" {
+  component [User Interface] as UI
+  component [Encryption Module] as EM
+  component [Key Management] as KM
+  component [Password Storage] as PS
+  
+  interface "User Input" as UI_Input
+  interface "Data Encryption" as EM_Encrypt
+  interface "Key Retrieval" as KM_Get
+  interface "Password Retrieval" as PS_Get
+  
+  UI -right-> UI_Input
+  UI_Input -right-> EM
+  EM -right-> EM_Encrypt
+  EM_Encrypt -right-> PS
+  EM -down-> KM_Get
+  KM_Get -left-> KM
+  PS -down-> PS_Get
+  UI -down-> PS_Get
+}
+
+node "Local File System" {
+  artifact "firstTime0.txt" as FT
+  artifact "senhasN.json" as SN
+  artifact "key.bin" as KB
+  artifact "IV.bin" as IVB
+}
+
+node "External USB Drive" {
+  artifact "key.bin" as KBE
+  artifact "IV.bin" as IVBE
+}
+
+PS -- SN
+KM -- KB
+KM -- IVB
+KM -- KBE
+KM -- IVBE
+EM -- FT
+
+note right of UI
+  Command-line interface
+  for user interaction
+end note
+
+note right of KM
+  Prioritizes keys from 
+  external drive over local storage
+end note
+
+note bottom of PS
+  Handles individual file 
+  encryption for each password
+end note
+@enduml

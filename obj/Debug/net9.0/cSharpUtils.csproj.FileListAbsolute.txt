@@ -1,0 +1,15 @@
+C:\Users\edu\Desktop\csharp\BrainKey\obj\Debug\net9.0\cSharpUtils.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\edu\Desktop\csharp\BrainKey\obj\Debug\net9.0\cSharpUtils.AssemblyInfoInputs.cache
+C:\Users\edu\Desktop\csharp\BrainKey\obj\Debug\net9.0\cSharpUtils.AssemblyInfo.cs
+C:\Users\edu\Desktop\csharp\BrainKey\obj\Debug\net9.0\cSharpUtils.csproj.CoreCompileInputs.cache
+C:\Users\edu\Desktop\csharp\BrainKey\obj\Debug\net9.0\cSharpUtils.sourcelink.json
+C:\Users\edu\Desktop\csharp\BrainKey\bin\Debug\net9.0\cSharpUtils.exe
+C:\Users\edu\Desktop\csharp\BrainKey\bin\Debug\net9.0\cSharpUtils.deps.json
+C:\Users\edu\Desktop\csharp\BrainKey\bin\Debug\net9.0\cSharpUtils.runtimeconfig.json
+C:\Users\edu\Desktop\csharp\BrainKey\bin\Debug\net9.0\cSharpUtils.dll
+C:\Users\edu\Desktop\csharp\BrainKey\bin\Debug\net9.0\cSharpUtils.pdb
+C:\Users\edu\Desktop\csharp\BrainKey\obj\Debug\net9.0\cSharpUtils.dll
+C:\Users\edu\Desktop\csharp\BrainKey\obj\Debug\net9.0\refint\cSharpUtils.dll
+C:\Users\edu\Desktop\csharp\BrainKey\obj\Debug\net9.0\cSharpUtils.pdb
+C:\Users\edu\Desktop\csharp\BrainKey\obj\Debug\net9.0\cSharpUtils.genruntimeconfig.cache
+C:\Users\edu\Desktop\csharp\BrainKey\obj\Debug\net9.0\ref\cSharpUtils.dll
