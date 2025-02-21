@@ -17,7 +17,7 @@ static public class masterKeyManager
         Console.WriteLine("1. O programa irá gerar dois arquivos: key.bin e IV.bin");
         Console.WriteLine("2. Mova esses dois arquivos para um pendrive qualquer.");
         Console.WriteLine("3. Note que o programa irá lhe perguntar se o usuario quer setar uma sigla de drive.");
-        Console.WriteLine("4. Isso é para casos quando o seu pendrive é E:/, F:/, etc.");
+        Console.WriteLine(@"4. Isso é para casos quando o seu pendrive é E:\, F:\, etc.");
         Console.WriteLine("5. Estas instruções e as duas proximas perguntas irão aparecer apenas uma vez.");
         Console.WriteLine("6. Execute o programa novamente para usar-lo");
         
@@ -55,7 +55,7 @@ static public class masterKeyManager
             }
 
             string FirstBootUp = ".";
-            cSharpUtils.Encrypt(encrypter, FirstBootUp, "firstTime", "txt", 0);
+            File.WriteAllText("firstTime.txt", FirstBootUp);
         }
         else 
         {

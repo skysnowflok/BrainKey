@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "QT4pCIabPTE=",
+  "dgSpecHash": "1JhVZQL+g+A=",
   "success": true,
   "projectFilePath": "C:\\Users\\edu\\Desktop\\csharp\\BrainKey\\cSharpUtils.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\edu\\.nuget\\packages\\microsoft.data.sqlite\\9.0.2\\microsoft.data.sqlite.9.0.2.nupkg.sha512",
     "C:\\Users\\edu\\.nuget\\packages\\microsoft.data.sqlite.core\\9.0.2\\microsoft.data.sqlite.core.9.0.2.nupkg.sha512",
-    "C:\\Users\\edu\\.nuget\\packages\\sqliteapi\\0.1.0\\sqliteapi.0.1.0.nupkg.sha512",
+    "C:\\Users\\edu\\.nuget\\packages\\sqliteapi\\0.1.3\\sqliteapi.0.1.3.nupkg.sha512",
     "C:\\Users\\edu\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.1.10\\sqlitepclraw.bundle_e_sqlite3.2.1.10.nupkg.sha512",
     "C:\\Users\\edu\\.nuget\\packages\\sqlitepclraw.core\\2.1.10\\sqlitepclraw.core.2.1.10.nupkg.sha512",
     "C:\\Users\\edu\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.10\\sqlitepclraw.lib.e_sqlite3.2.1.10.nupkg.sha512",

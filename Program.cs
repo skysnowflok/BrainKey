@@ -4,21 +4,34 @@ using Microsoft.VisualBasic;
 using System.Transactions;
 using System.Text.Json;
 using System.Runtime.InteropServices;
-class cSharpUtils 
+using SQLiteAPI;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+using System.Text;
+static class cSharpUtils 
 {
-    static byte[] encrypted;
+    static string encryptedIdentifier;
+    static string encryptedPassword;
     static string decrypted;
     static byte[] masterKey;
     static bool programTerminateFlag = false;
     static string inputIdentificador;
     static string inputSenha;
     static List<passwordTemplate> listOfPasswords = new List<passwordTemplate>();
-    static List<byte[]> listofEncryptedPasswords = new List<byte[]>();
+    static string decryptedIdentifier;
+    static string decryptedPassword;
+
+
 
 
     static void Main()
     {
-        if (File.Exists("firstTime0.txt"))
+        SQLiteAPI.Interface.DatabaseCommand("create", "passwords");
+        SQLiteAPI.Interface.DatabaseCommand("select", "passwords");
+        SQLiteAPI.Interface.TableCommand("create", "encryptedPasswords", "Id INTEGER PRIMARY KEY AUTOINCREMENT, encIdentifier TEXT NOT NULL, encPassword, TEXT NOT NULL");
+
+
+        if (File.Exists("firstTime.txt"))
         {
             using (Aes myAes = Aes.Create())
             {
@@ -56,19 +69,13 @@ class cSharpUtils
                                 System.Console.WriteLine("Insira a senha: ");
                                 inputSenha = Console.ReadLine();
 
-                                passwordTemplate newPassword = new passwordTemplate();
+                                passwordTemplate newPassword = new passwordTemplate(inputIdentificador, inputSenha);
 
-                                newPassword.Identificador = inputIdentificador;
-                                newPassword.Senha = inputSenha;
-
-                                listOfPasswords.Add(newPassword);
-
-                                
-                                EncryptToJson(encrypter, listOfPasswords);
+                                Encrypt(encrypter, newPassword);
                                 break;
                             case 2:
                                 System.Console.WriteLine("Descriptografando...");
-                                GetPasswords(decrypter);
+                                DecryptAll(decrypter);
                                 System.Console.WriteLine("Sucesso!");
                                 break;
                         }
@@ -87,97 +94,95 @@ class cSharpUtils
         }
     }
 
-    static byte[] EncryptToJson(ICryptoTransform encrypter, List<passwordTemplate> input)
-    {
-        try
-        {
-            string newPasswordString = JsonSerializer.Serialize(input.Last());
-            byte[] encrypted;
-            encrypted = Encrypt(encrypter, newPasswordString, "senhas", "json", input.IndexOf(input.Last()));
-            listofEncryptedPasswords.Add(encrypted);
-            return encrypted;      
-        }
-        catch (Exception e) 
-        {
-            System.Console.WriteLine("Chave mestre incorreta: " + e);
-            return null;
-        }
-        
-    }
 
-    static public byte[] Encrypt(ICryptoTransform encrypter, string input, string fileName, string fileExtension, int i)
-    {
-        using (MemoryStream stream = new MemoryStream())
-        {
-            using (CryptoStream cryptoStream = new CryptoStream(stream, encrypter, CryptoStreamMode.Write))
-            {
-                using (StreamWriter writer = new StreamWriter(cryptoStream))
-                {
-                    writer.Write(input);
-                    writer.Flush();
-                }
-            }
-            encrypted = stream.ToArray();
-
-            using (FileStream masterKeyWriter = new FileStream($"{fileName}{i}.{fileExtension}", FileMode.Create, FileAccess.Write))
-            {
-                    masterKeyWriter.Write(encrypted, 0, encrypted.Length);
-            }
-            }
-            
-            return encrypted;
-    }
-
-    static passwordTemplate DecryptFromJson(ICryptoTransform decrypter, string filePath)
+    static public void Encrypt(ICryptoTransform encrypter, passwordTemplate input)
     {
         try 
         {
-            string decrypted = Decrypt(decrypter, filePath);
-            passwordTemplate decryptedPassword = JsonSerializer.Deserialize<passwordTemplate>(decrypted);
-            return decryptedPassword;
-        }
-        catch (Exception e)
-        {
-            System.Console.WriteLine("Acesso negado: " + e);
-            return null;
-        }
-        
-    }
-
-    static string Decrypt(ICryptoTransform decrypter, string filePath)
-    {
-        byte[] input = File.ReadAllBytes(filePath);
-        using (MemoryStream stream = new MemoryStream(input))
-        {
-            using (CryptoStream cryptoStream = new CryptoStream(stream, decrypter, CryptoStreamMode.Read))
+            using (MemoryStream stream = new MemoryStream())
             {
-                using (StreamReader reader = new StreamReader(cryptoStream))
+                using (CryptoStream cryptoStream = new CryptoStream(stream, encrypter, CryptoStreamMode.Write))
                 {
-                    decrypted = reader.ReadToEnd();
+                    using (StreamWriter writer = new StreamWriter(cryptoStream))
+                    {
+                        writer.Write(input.Identificador);
+                        writer.Flush();
+                    }
                 }
+                encryptedIdentifier = stream.ToString();
+            }
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                using (CryptoStream cryptoStream = new CryptoStream(stream, encrypter, CryptoStreamMode.Write))
+                {
+                    using (StreamWriter writer = new StreamWriter(cryptoStream))
+                    {
+                        writer.Write(input.Senha);
+                        writer.Flush();
+                    }
+                }
+                encryptedPassword = stream.ToString();
             }
         }
+        catch(Exception e)
+        {
+            System.Console.WriteLine("Erro: " + e);
+            return;
+        }
+    }
 
+    public static void WriteEncryptedPasswordToDatabase (ICryptoTransform encrypter, passwordTemplate input)
+    {
+        Encrypt(encrypter, input);
+        SQLiteAPI.Interface.TableCommand("addvalue", "encryptedPasswords", "encIdentifier, encPassword", $"{input.Identificador}, {input.Senha}");
+
+    }
+
+
+    static string DecryptAll(ICryptoTransform decrypter)
+    {
+        for (int i = 1; i <= 1; i++)
+        {
+            SQLiteAPI.Interface.TableCommand("getvalue", "encryptedPassword", "encIdentifier", i.ToString());
+            byte[] inputIdentifier = Encoding.ASCII.GetBytes(SQLiteAPI.Interface.GetValueResult);
+            SQLiteAPI.Interface.TableCommand("getvalue", "encryptedPassword", "encPassword", i.ToString());
+            byte[] inputPassword = Encoding.ASCII.GetBytes(SQLiteAPI.Interface.GetValueResult);
+
+            using (MemoryStream stream = new MemoryStream(inputIdentifier))
+            {
+                using (CryptoStream cryptoStream = new CryptoStream(stream, decrypter, CryptoStreamMode.Read))
+                {
+                    using (StreamReader reader = new StreamReader(cryptoStream))
+                    {
+                        decryptedIdentifier = reader.ReadToEnd();
+                    }
+                }
+            }
+
+            using (MemoryStream stream = new MemoryStream(inputPassword))
+            {
+                using (CryptoStream cryptoStream = new CryptoStream(stream, decrypter, CryptoStreamMode.Read))
+                {
+                    using (StreamReader reader = new StreamReader(cryptoStream))
+                    {
+                        decryptedPassword = reader.ReadToEnd();
+                    }
+                }
+            }
+
+            SQLiteAPI.Interface.TableCommand("create", "passwords", "Id INTEGER PRIMARY KEY AUTOINCREMENT, Identifier TEXT NOT NULL, Password TEXT NOT NULL");
+            SQLiteAPI.Interface.TableCommand("addvalue", "passwords", "Identifier, Password", $"{decryptedIdentifier}, {decryptedPassword}");
+        }
+        SQLiteAPI.Interface.TableCommand("view", "passwords");
+        System.Console.WriteLine("Press any key to return...");
+        Console.ReadKey();
+        SQLiteAPI.Interface.TableCommand("destroy", "passwords");
+        
+        
         return decrypted;
     }
 
-    
 
-
-
-    static void GetPasswords(ICryptoTransform decrypter)
-    {
-        for (int i = 0; i < listofEncryptedPasswords.Count; i++) 
-        {
-            passwordTemplate DecPassword = new passwordTemplate();
-            DecPassword = DecryptFromJson(decrypter, $"senhas{i}.json");
-            // Isso é uma merda, depois arruma isso.
-
-            System.Console.WriteLine("Indentificador: " + DecPassword.Identificador);
-            System.Console.WriteLine("Senha: " + DecPassword.Senha);
-            System.Console.WriteLine("-----------------------------")
-        }
-        
-    }
 
 }

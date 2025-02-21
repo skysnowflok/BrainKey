@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SQLiteAPI" Version="0.1.0" />
+    <PackageReference Include="SQLiteAPI" Version="0.1.3" />
   </ItemGroup>
 
 </Project>

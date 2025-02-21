@@ -32,7 +32,7 @@
           }
         }
       },
-      "SQLiteAPI/0.1.0": {
+      "SQLiteAPI/0.1.3": {
         "type": "package",
         "dependencies": {
           "Microsoft.Data.Sqlite": "9.0.2"
@@ -224,14 +224,14 @@
         "microsoft.data.sqlite.core.nuspec"
       ]
     },
-    "SQLiteAPI/0.1.0": {
-      "sha512": "ADSN2BxPFDn1AQpFBHBpzZEa4TqzU9aRdE3c19mGCEnCpMvuCxZDryqiS8Br10UCkQYquy+TaOipKiqzGqbl+w==",
+    "SQLiteAPI/0.1.3": {
+      "sha512": "sZ0zGOvBs4hZYU3XAtbCXRERmv9A9xb4GmBcNYH6k3Ai6Tj+8W1SS/T1BkSo1C4iCGsPA0Kp6N47KVe/b4D6jg==",
       "type": "package",
-      "path": "sqliteapi/0.1.0",
+      "path": "sqliteapi/0.1.3",
       "files": [
         ".nupkg.metadata",
         "lib/net9.0/SQLite API.dll",
-        "sqliteapi.0.1.0.nupkg.sha512",
+        "sqliteapi.0.1.3.nupkg.sha512",
         "sqliteapi.nuspec"
       ]
     },
@@ -351,7 +351,7 @@
   },
   "projectFileDependencyGroups": {
     "net9.0": [
-      "SQLiteAPI >= 0.1.0"
+      "SQLiteAPI >= 0.1.3"
     ]
   },
   "packageFolders": {
@@ -400,7 +400,7 @@
         "dependencies": {
           "SQLiteAPI": {
             "target": "Package",
-            "version": "[0.1.0, )"
+            "version": "[0.1.3, )"
           }
         },
         "imports": [
